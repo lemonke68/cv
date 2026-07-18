@@ -1,0 +1,20 @@
+services:
+  portfolio:
+    image: nginx:alpine
+    container_name: portfolio
+    restart: unless-stopped
+    volumes:
+      # монтируем ПАПКУ, а не один файл — иначе git pull (rename) не виден контейнеру
+      - ./public:/usr/share/nginx/html:ro
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portfolio.rule=Host(`cv.mango-kokos.ru`)"
+      - "traefik.http.routers.portfolio.entrypoints=websecure"
+      - "traefik.http.routers.portfolio.tls.certresolver=myresolver"
+      - "traefik.http.services.portfolio.loadbalancer.server.port=80"
+
+networks:
+  web:
+    external: true

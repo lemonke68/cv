@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="description" content="Гущин Иван, Junior Linux System Administrator. Домашняя инфраструктура: сеть, Docker, reverse-proxy, хранилище, удалённый доступ.">
+<title>Гущин Иван · Junior Linux System Administrator</title>
+<style>
+  :root{
+    --bg:#0b0f14; --bg2:#0e131a; --surface:#141b24; --surface2:#19212c; --surface3:#1f2833;
+    --border:#233041; --border2:#2f3d4e;
+    --text:#e6edf3; --muted:#95a2b1; --muted2:#6c7a8b;
+    --accent:#58a6ff;
+    --l-wan:#8b98a5; --l-net:#58a6ff; --l-node:#bc8cff; --l-proxy:#39c5cf; --l-svc:#46c266; --l-store:#e0a63a;
+    --radius:12px; --radius-sm:8px;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--sans); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(900px 500px at 78% -8%, rgba(88,166,255,.09), transparent 60%),
+                     radial-gradient(700px 420px at -6% 6%, rgba(188,140,255,.07), transparent 55%);
+    background-attachment:fixed;
+  }
+  a{color:var(--accent); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 20px}
+  .mono{font-family:var(--mono)}
+
+  /* ---------- header ---------- */
+  header{padding:64px 0 40px; border-bottom:1px solid var(--border)}
+  .eyebrow{font-family:var(--mono); font-size:13px; letter-spacing:.06em; color:var(--muted2); margin:0 0 14px}
+  h1{margin:0; font-size:clamp(28px,6.2vw,46px); line-height:1.1; letter-spacing:-.01em; font-weight:700}
+  .role{margin:12px 0 0; font-size:clamp(16px,3.2vw,20px); color:var(--l-net); font-weight:600}
+  .lede{margin:16px 0 0; max-width:62ch; color:var(--muted); font-size:clamp(15px,2.6vw,17px)}
+  .stack{display:flex; flex-wrap:wrap; gap:7px; margin:26px 0 0}
+  .chip{font-family:var(--mono); font-size:12px; color:var(--muted); background:var(--surface); border:1px solid var(--border);
+        padding:4px 9px; border-radius:999px; white-space:nowrap}
+  .contacts{display:flex; flex-wrap:wrap; gap:8px 18px; margin:24px 0 0; font-size:14px}
+  .contacts a,.contacts span{color:var(--muted); font-family:var(--mono); font-size:13px}
+  .contacts .k{color:var(--muted2)}
+
+  /* ---------- sections ---------- */
+  section{padding:54px 0; border-bottom:1px solid var(--border)}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin:0 0 8px}
+  .sec-num{font-family:var(--mono); font-size:13px; color:var(--accent)}
+  h2{margin:0; font-size:clamp(21px,4vw,28px); font-weight:700; letter-spacing:-.01em}
+  .sec-sub{margin:6px 0 30px; color:var(--muted); max-width:66ch; font-size:15px}
+  section:last-of-type .sec-sub{margin-bottom:0}
+
+  /* ---------- diagram ---------- */
+  .diagram-grid{display:grid; grid-template-columns:1fr; gap:20px}
+  @media(min-width:900px){ .diagram-grid{grid-template-columns:1fr 320px; align-items:start} }
+
+  .stage{display:flex; flex-direction:column; gap:0}
+  .layer{
+    position:relative; background:linear-gradient(180deg,var(--bg2),rgba(20,27,36,.55));
+    border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px;
+  }
+  .layer + .connector{height:26px}
+  .connector{position:relative; display:flex; align-items:center; justify-content:center}
+  .connector::before{content:""; width:2px; height:100%;
+    background:linear-gradient(var(--border2),rgba(47,61,78,.15))}
+  .connector::after{content:""; position:absolute; bottom:2px; width:7px; height:7px;
+    border-right:2px solid var(--border2); border-bottom:2px solid var(--border2); transform:rotate(45deg)}
+
+  .layer-label{font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted2); margin:0 0 10px; display:flex; align-items:center; gap:8px}
+  .layer-label::before{content:""; width:8px; height:8px; border-radius:2px; background:var(--lc,var(--muted))}
+  .nodes{display:flex; flex-wrap:wrap; gap:8px}
+  .l-net{--lc:var(--l-net)} .l-node{--lc:var(--l-node)} .l-proxy{--lc:var(--l-proxy)}
+  .l-svc{--lc:var(--l-svc)} .l-store{--lc:var(--l-store)} .l-wan{--lc:var(--l-wan)}
+
+  .node{
+    appearance:none; cursor:pointer; text-align:left; font-family:inherit;
+    background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--lc,var(--muted));
+    border-radius:var(--radius-sm); padding:9px 11px; color:var(--text);
+    display:flex; flex-direction:column; gap:2px; min-width:0; flex:1 1 auto;
+    transition:border-color .15s, background .15s, transform .05s;
+  }
+  .node:hover,.node:focus-visible{background:var(--surface2); border-color:var(--lc); outline:none}
+  .node.is-active{background:var(--surface2); border-color:var(--lc); box-shadow:0 0 0 1px var(--lc), 0 6px 22px -12px var(--lc)}
+  .node:active{transform:translateY(1px)}
+  .node .nt{font-weight:600; font-size:14px; line-height:1.25}
+  .node .nm{font-family:var(--mono); font-size:11px; color:var(--muted2); line-height:1.3; overflow-wrap:anywhere}
+  .node.hub{flex-basis:100%; padding:12px 14px}
+  .node.hub .nt{font-size:15.5px}
+
+  /* service groups inside services layer */
+  .groups{display:grid; grid-template-columns:1fr; gap:10px}
+  @media(min-width:560px){ .groups{grid-template-columns:1fr 1fr} }
+  .group{border:1px dashed var(--border2); border-radius:var(--radius-sm); padding:10px}
+  .group-h{font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--muted); margin:0 0 8px}
+  .group .nodes .node{flex:1 1 120px}
+
+  /* detail panel */
+  .detail{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px}
+  @media(min-width:900px){ .detail{position:sticky; top:16px} }
+  .detail .d-hint{color:var(--muted); font-size:14px}
+  .detail .d-hint b{color:var(--text)}
+  .legend{display:flex; flex-wrap:wrap; gap:6px 14px; margin:14px 0 0}
+  .legend span{font-family:var(--mono); font-size:11px; color:var(--muted); display:flex; align-items:center; gap:6px}
+  .legend i{width:9px; height:9px; border-radius:2px; display:inline-block}
+  .d-title{margin:0; font-size:18px; font-weight:700; display:flex; align-items:center; gap:9px}
+  .d-title::before{content:""; width:10px; height:10px; border-radius:3px; background:var(--dc,var(--accent)); flex:none}
+  .d-role{margin:4px 0 0; color:var(--muted); font-size:14px}
+  .d-tags{display:flex; flex-wrap:wrap; gap:6px; margin:14px 0 0}
+  .d-tags .chip{color:var(--text); background:var(--surface3)}
+  .d-desc{margin:14px 0 0; font-size:14.5px; color:#cdd7e1}
+
+  /* ---------- cases ---------- */
+  .cases{display:grid; grid-template-columns:1fr; gap:16px}
+  @media(min-width:760px){ .cases{grid-template-columns:1fr 1fr} }
+  .case{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px;
+    display:flex; flex-direction:column}
+  .case .tag{font-family:var(--mono); font-size:11px; letter-spacing:.05em; color:var(--l-store); text-transform:uppercase}
+  .case h3{margin:8px 0 0; font-size:17px; line-height:1.3}
+  .case dl{margin:14px 0 0; display:grid; gap:10px}
+  .case dt{font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; color:var(--muted2)}
+  .case dd{margin:2px 0 0; font-size:14.5px; color:#cdd7e1}
+  .case .res dd{color:var(--text)}
+  .case .res dt{color:var(--l-svc)}
+  .case b.k{color:var(--text); font-weight:600}
+  .case code{font-family:var(--mono); font-size:12.5px; background:var(--bg2); border:1px solid var(--border);
+    padding:1px 5px; border-radius:5px; color:#cfe3ff; overflow-wrap:anywhere}
+
+  footer{padding:34px 0 60px; color:var(--muted2); font-size:13px}
+  footer .mono{font-size:12px}
+  ::selection{background:rgba(88,166,255,.28)}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ============ HEADER ============ -->
+  <header>
+    <p class="eyebrow">// homelab · self-hosted · Debian</p>
+    <h1>Гущин Иван</h1>
+    <p class="role">Junior Linux System Administrator</p>
+    <p class="lede">Сам собрал и держу домашний сервер: интернет-шлюз, десяток сервисов в Docker за одним reverse-proxy, зеркальное хранилище и защищённый удалённый доступ. Всё, что описано ниже, работает у меня дома в постоянной эксплуатации.</p>
+
+    <div class="stack" aria-label="Стек технологий">
+      <span class="chip">Debian</span>
+      <span class="chip">systemd</span>
+      <span class="chip">Docker · Compose</span>
+      <span class="chip">Traefik</span>
+      <span class="chip">nftables · ufw</span>
+      <span class="chip">Tailscale · WireGuard</span>
+      <span class="chip">Pi-hole</span>
+      <span class="chip">mdadm RAID</span>
+      <span class="chip">Ansible</span>
+      <span class="chip">PostgreSQL · MariaDB</span>
+      <span class="chip">Prometheus · Grafana</span>
+      <span class="chip">Bash</span>
+    </div>
+
+    <!-- TODO: впишите свои контакты вместо плейсхолдеров -->
+    <div class="contacts">
+      <span><span class="k">email:</span> you@example.com</span>
+      <span><span class="k">telegram:</span> @username</span>
+      <span><span class="k">github:</span> github.com/username</span>
+    </div>
+  </header>
+
+  <!-- ============ 1. DIAGRAM ============ -->
+  <section id="infra">
+    <div class="sec-head"><span class="sec-num">01</span><h2>Схема инфраструктуры</h2></div>
+    <p class="sec-sub">Логические слои по ходу трафика: интернет, шлюз и сеть, reverse-proxy, сервисы, хранилище. Наведите или коснитесь любого блока, чтобы прочитать, что это и зачем.</p>
+
+    <div class="diagram-grid">
+      <div class="stage">
+
+        <!-- WAN -->
+        <div class="layer l-wan">
+          <p class="layer-label">Интернет · WAN</p>
+          <div class="nodes">
+            <button class="node hub" data-key="internet">
+              <span class="nt">Интернет-провайдер</span>
+              <span class="nm">аплинк по PPPoE</span>
+            </button>
+          </div>
+        </div>
+        <div class="connector"></div>
+
+        <!-- NETWORK / GATEWAY -->
+        <div class="layer l-net">
+          <p class="layer-label">Шлюз и сеть</p>
+          <div class="nodes">
+            <button class="node hub" data-key="beelink">
+              <span class="nt">Мини-ПК: шлюз и сервер</span>
+              <span class="nm">Ryzen 9 6900HX · Debian · роутер и хост Docker</span>
+            </button>
+            <button class="node" data-key="ap">
+              <span class="nt">Точка доступа</span>
+              <span class="nm">WiFi 6 · роутинг снят</span>
+            </button>
+            <button class="node" data-key="pihole">
+              <span class="nt">Pi-hole</span>
+              <span class="nm">DNS и фильтр рекламы</span>
+            </button>
+          </div>
+        </div>
+        <div class="connector"></div>
+
+        <!-- NODES + REMOTE -->
+        <div class="layer l-node">
+          <p class="layer-label">Узлы и удалённый доступ</p>
+          <div class="nodes">
+            <button class="node" data-key="tailscale">
+              <span class="nt">Tailscale (mesh-VPN)</span>
+              <span class="nm">WireGuard · SSH только через VPN</span>
+            </button>
+            <button class="node" data-key="workstation">
+              <span class="nt">Рабочая станция</span>
+              <span class="nm">администрирование</span>
+            </button>
+            <button class="node" data-key="thinkpad">
+              <span class="nt">Ноутбук-нода</span>
+              <span class="nm">узел сети</span>
+            </button>
+            <button class="node" data-key="pi">
+              <span class="nt">Raspberry Pi</span>
+              <span class="nm">метрики и подсветка стойки</span>
+            </button>
+          </div>
+        </div>
+        <div class="connector"></div>
+
+        <!-- PROXY -->
+        <div class="layer l-proxy">
+          <p class="layer-label">Reverse-proxy</p>
+          <div class="nodes">
+            <button class="node hub" data-key="traefik">
+              <span class="nt">Traefik</span>
+              <span class="nm">единый вход, авто-HTTPS, маршруты из docker-лейблов</span>
+            </button>
+          </div>
+        </div>
+        <div class="connector"></div>
+
+        <!-- SERVICES -->
+        <div class="layer l-svc">
+          <p class="layer-label">Сервисы · Docker</p>
+          <div class="groups">
+            <div class="group">
+              <p class="group-h">Медиа</p>
+              <div class="nodes">
+                <button class="node" data-key="jellyfin"><span class="nt">Jellyfin</span><span class="nm">видео</span></button>
+                <button class="node" data-key="navidrome"><span class="nt">Navidrome</span><span class="nm">музыка</span></button>
+                <button class="node" data-key="immich"><span class="nt">Immich</span><span class="nm">фото · ML</span></button>
+                <button class="node" data-key="komga"><span class="nt">Komga</span><span class="nm">комиксы</span></button>
+                <button class="node" data-key="kiwix"><span class="nt">Kiwix</span><span class="nm">оффлайн-wiki</span></button>
+              </div>
+            </div>
+            <div class="group">
+              <p class="group-h">Облако и данные</p>
+              <div class="nodes">
+                <button class="node" data-key="nextcloud"><span class="nt">Nextcloud</span><span class="nm">файлы</span></button>
+                <button class="node" data-key="vaultwarden"><span class="nt">Vaultwarden</span><span class="nm">пароли</span></button>
+              </div>
+            </div>
+            <div class="group">
+              <p class="group-h">Коммуникации</p>
+              <div class="nodes">
+                <button class="node" data-key="matrix"><span class="nt">Matrix</span><span class="nm">Synapse · Element</span></button>
+                <button class="node" data-key="ntfy"><span class="nt">ntfy</span><span class="nm">уведомления</span></button>
+              </div>
+            </div>
+            <div class="group">
+              <p class="group-h">Наблюдаемость и разработка</p>
+              <div class="nodes">
+                <button class="node" data-key="monitoring"><span class="nt">Мониторинг</span><span class="nm">Prometheus · Grafana</span></button>
+                <button class="node" data-key="coffeeapi"><span class="nt">Свой REST API</span><span class="nm">Node · MariaDB</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="connector"></div>
+
+        <!-- STORAGE -->
+        <div class="layer l-store">
+          <p class="layer-label">Хранилище</p>
+          <div class="nodes">
+            <button class="node" data-key="raid"><span class="nt">Зеркало дисков</span><span class="nm">mdadm RAID 1</span></button>
+            <button class="node" data-key="ssd"><span class="nt">Системный SSD</span><span class="nm">ОС и конфиги</span></button>
+            <button class="node" data-key="db"><span class="nt">Базы данных</span><span class="nm">PostgreSQL · MariaDB</span></button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- DETAIL PANEL -->
+      <aside class="detail" id="detail" aria-live="polite">
+        <div id="d-default">
+          <p class="d-hint"><b>Интерактивная схема.</b> Выберите компонент, чтобы прочитать про его роль, назначение и технологии.</p>
+          <div class="legend">
+            <span><i style="background:var(--l-net)"></i>сеть</span>
+            <span><i style="background:var(--l-node)"></i>доступ</span>
+            <span><i style="background:var(--l-proxy)"></i>proxy</span>
+            <span><i style="background:var(--l-svc)"></i>сервисы</span>
+            <span><i style="background:var(--l-store)"></i>хранилище</span>
+          </div>
+        </div>
+        <div id="d-content" hidden>
+          <h3 class="d-title" id="d-title"></h3>
+          <p class="d-role" id="d-role"></p>
+          <div class="d-tags" id="d-tags"></div>
+          <p class="d-desc" id="d-desc"></p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 2. CASES ============ -->
+  <section id="cases">
+    <div class="sec-head"><span class="sec-num">02</span><h2>Инженерные кейсы</h2></div>
+    <p class="sec-sub">Реальные задачи, которые пришлось разбирать: что было, что сделал, что получилось. По ним видно, как я подхожу к диагностике и выбору решений.</p>
+
+    <div class="cases">
+
+      <article class="case">
+        <span class="tag">Docker · systemd · storage</span>
+        <h3>Split-brain у Docker после перезагрузки</h3>
+        <dl>
+          <div><dt>Ситуация</dt><dd>После перезагрузки фото и медиа открывались пустыми. Docker стартовал раньше, чем монтировался дисковый массив, и разворачивал данные на системном диске вместо зеркала. Настоящие файлы и рабочий каталог Docker оставались на неподключённом массиве, а обращения к контейнерам падали с ошибкой доступа.</dd></div>
+          <div><dt>Что сделал</dt><dd>Локализовал: демон держал данные не на том диске. Аккуратно остановил Docker, проверил что массив на месте, свёл демон обратно на зеркало и поднял стек. Корень был в порядке загрузки, монтирование массива не было обязательным условием старта. Закрыл это жёсткой зависимостью <b class="k">docker</b> от монтирования тома через <code>systemd</code>.</dd></div>
+          <div class="res"><dt>Результат</dt><dd>Сервисы вернулись на реальные данные. Теперь без своего хранилища Docker просто не стартует и падает заметно, а не молча уезжает на системный диск. Такая гонка больше не повторится.</dd></div>
+        </dl>
+      </article>
+
+      <article class="case">
+        <span class="tag">Kubernetes · выбор инструмента</span>
+        <h3>Отказ от k3s в пользу Docker Compose</h3>
+        <dl>
+          <div><dt>Ситуация</dt><dd>Ставил <b class="k">k3s</b>, чтобы разобраться с оркестрацией. Поды застревали на выкачивании образов (<code>ImagePullBackOff</code>), а деплой на одном узле выходил сложнее, чем польза от самого кластера.</dd></div>
+          <div><dt>Что сделал</dt><dd>Разобрал причину сбоя с образами, но трезво оценил отдачу. Для одного узла Kubernetes добавляет больше сложности, чем даёт. Вернулся на <b class="k">Docker Compose</b> с systemd и убрал k3s полностью.</dd></div>
+          <div class="res"><dt>Результат</dt><dd>Деплой стал прозрачным и предсказуемым, движущихся частей меньше. Главный вывод для себя: инструмент подбирают под масштаб задачи, а не наоборот.</dd></div>
+        </dl>
+      </article>
+
+      <article class="case">
+        <span class="tag">mdadm · RAID · восстановление</span>
+        <h3>RAID 1 и восстановление затёртого диска</h3>
+        <dl>
+          <div><dt>Ситуация</dt><dd>Важные данные (фото, облако, медиа) лежали на паре обычных дисков, нужна была устойчивость к отказу одного из них. Отдельная история: у друга случайно затёрли раздел с музыкой и проектами.</dd></div>
+          <div><dt>Что сделал</dt><dd>Собрал программное зеркало на <b class="k">mdadm</b> и вынес на него данные Docker. Для восстановления снял побайтовый образ диска через <code>ddrescue</code>, вытащил файлы карвингом (<code>photorec</code>) и честно отделил то, что восстановилось (пара тысяч проектов и аудио), от того, что уже перезаписано.</dd></div>
+          <div class="res"><dt>Результат</dt><dd>Массив переживает смерть одного диска без потери данных. Файлы друга вернул, образ оставил как страховку. Заодно разобрался, чем удаление файла отличается от перезаписи блоков.</dd></div>
+        </dl>
+      </article>
+
+      <article class="case">
+        <span class="tag">network · PPPoE · nftables</span>
+        <h3>Сервер как роутер квартиры и выборочный VPN</h3>
+        <dl>
+          <div><dt>Ситуация</dt><dd>Штатный роутер упирался в потолок скорости и ронял WiFi. Хотелось поднять скорость, свести весь роутинг в одну точку и пустить часть трафика через VPN сразу для всех устройств, без настройки на каждом.</dd></div>
+          <div><dt>Что сделал</dt><dd>Перенёс роутинг на сервер: интернет по <b class="k">PPPoE</b>, NAT на <code>nftables</code>, роутер оставил только точкой доступа. Долго ловил засаду: <code>ufw</code> молча резал входящий GRE, из-за чего туннель поднимал управляющий канал, но данные не шли. Разрешил протокол в правилах ufw. Дальше тюнинг: BBR, буферизация туннеля, шейпер CAKE. Для выборочного VPN поднял прокси в режиме прозрачного шлюза по спискам доменов.</dd></div>
+          <div class="res"><dt>Результат</dt><dd>Скорость выросла почти втрое, задержка под нагрузкой около 4 мс. SSH закрыл наружу, оставил доступ только через VPN. Как следует разобрался в сетевом стеке Linux: PPPoE, nftables, ufw, GRE, QoS.</dd></div>
+        </dl>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============ 3. DEPLOY ============ -->
+  <section id="deploy">
+    <div class="sec-head"><span class="sec-num">03</span><h2>Как развёрнута эта страница</h2></div>
+    <p class="sec-sub">Тем же способом, что и остальное на сервере: статический файл в контейнере nginx за Traefik. Reverse-proxy подхватывает его по docker-лейблам и сам выпускает сертификат Let's Encrypt. Правки едут через git: коммит с ноутбука, а сервер подтягивает новую версию сам.</p>
+  </section>
+
+  <footer>
+    <p class="mono">Гущин Иван · Junior Linux System Administrator</p>
+    <p>Схема отражает реальную архитектуру сервера.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var C = {net:"var(--l-net)", node:"var(--l-node)", proxy:"var(--l-proxy)", svc:"var(--l-svc)", store:"var(--l-store)", wan:"var(--l-wan)"};
+  var D = {
+    internet:{c:C.wan, t:"Интернет / WAN", r:"Аплинк провайдера по PPPoE",
+      tags:["PPPoE","ppp0"],
+      d:"Канал провайдера заходит на сервер напрямую. Сервер сам поднимает PPPoE-сессию и держит внешний адрес, без отдельного роутера-посредника."},
+    beelink:{c:C.net, t:"Мини-ПК: шлюз и сервер", r:"Роутер квартиры и хост приложений на одной машине",
+      tags:["Ryzen 9 6900HX","Debian","systemd","Docker","nftables · ufw"],
+      d:"Совмещает две роли. Как шлюз поднимает интернет по PPPoE, раздаёт NAT на nftables, фильтрует трафик через ufw и держит QoS. Как сервер гоняет весь стек в Docker. Домашний трафик идёт через него."},
+    ap:{c:C.net, t:"Точка доступа", r:"Раздаёт WiFi, роутинг снят",
+      tags:["WiFi 6","AP-mode"],
+      d:"Бывший основной роутер, переведён в режим точки доступа. Весь роутинг и NAT ушли на сервер, а он раздаёт беспроводную сеть и адреса клиентам."},
+    pihole:{c:C.net, t:"Pi-hole", r:"Локальный DNS и фильтр рекламы",
+      tags:["Pi-hole","DNS","нативный systemd"],
+      d:"Резолвит имена для всей домашней сети и режет рекламу с трекерами на сетевом уровне. Работает нативным сервисом, а не в контейнере, чтобы DNS не падал вместе с рантаймом Docker."},
+    tailscale:{c:C.node, t:"Tailscale (mesh-VPN)", r:"Приватная сеть для удалённого доступа",
+      tags:["WireGuard","mesh"],
+      d:"Overlay-сеть поверх интернета: устройства видят друг друга из любой точки. Доступ к серверу по SSH разрешён только с этого интерфейса, наружу порт закрыт, поэтому управление не торчит в открытый интернет."},
+    workstation:{c:C.node, t:"Рабочая станция", r:"Машина администратора",
+      tags:["Tailscale","SSH"],
+      d:"С неё веду администрирование сервера. Заходит только через приватную сеть, прямого доступа из интернета нет."},
+    thinkpad:{c:C.node, t:"Ноутбук-нода", r:"Ещё один узел сети",
+      tags:["Linux","Tailscale"],
+      d:"Ноутбук в той же приватной сети, достаёт до сервера откуда угодно."},
+    pi:{c:C.node, t:"Raspberry Pi", r:"Мониторинг и физическая индикация",
+      tags:["node_exporter","WS2812B"],
+      d:"Снимает метрики через Prometheus node_exporter и подсвечивает лентой температуру процессора сервера от зелёного к красному. Видно нагрузку, не открывая дашборд."},
+    traefik:{c:C.proxy, t:"Traefik", r:"Единая точка входа и авто-HTTPS",
+      tags:["Traefik","Let's Encrypt","Docker labels"],
+      d:"Принимает весь внешний трафик, терминирует TLS и раздаёт запросы по нужным контейнерам, ориентируясь на docker-лейблы. Новый сервис подключается парой строк конфига, сертификаты выпускаются и продлеваются сами."},
+    jellyfin:{c:C.svc, t:"Jellyfin", r:"Медиасервер для фильмов и сериалов",
+      tags:["Docker","transcoding"],
+      d:"Свой стриминг видео с транскодингом на лету. Библиотека лежит на дисковом зеркале."},
+    navidrome:{c:C.svc, t:"Navidrome", r:"Стриминг музыки",
+      tags:["Docker","Subsonic API"],
+      d:"Музыкальная коллекция с Subsonic-совместимым API, играется в любом клиенте на телефоне."},
+    immich:{c:C.svc, t:"Immich", r:"Хранилище фото и видео",
+      tags:["Docker","PostgreSQL","ML","Redis"],
+      d:"Замена облачным галереям: заливка с телефона, поиск по лицам и объектам через ML. Стек из нескольких контейнеров, метаданные в PostgreSQL."},
+    komga:{c:C.svc, t:"Komga", r:"Библиотека комиксов и манги",
+      tags:["Docker","OPDS"],
+      d:"Читалка с веб-интерфейсом и каталогом OPDS для чтения с любого устройства."},
+    kiwix:{c:C.svc, t:"Kiwix", r:"Оффлайн Wikipedia и документация",
+      tags:["Docker",".zim"],
+      d:"Держит архивы Wikipedia и технической документации, работают без интернета."},
+    nextcloud:{c:C.svc, t:"Nextcloud", r:"Личное облако для файлов",
+      tags:["Docker","PostgreSQL","WebDAV"],
+      d:"Файлы, календарь, синхронизация заметок по WebDAV. За обратным прокси настроены доверенные заголовки."},
+    vaultwarden:{c:C.svc, t:"Vaultwarden", r:"Менеджер паролей",
+      tags:["Docker","Bitwarden-совместимый","Rust"],
+      d:"Лёгкая реализация Bitwarden на Rust. Настроены двухфакторная аутентификация и регулярные бэкапы."},
+    matrix:{c:C.svc, t:"Matrix (Synapse)", r:"Свой мессенджер с федерацией",
+      tags:["Synapse","Element","OIDC","Ansible","systemd"],
+      d:"Homeserver на Synapse с веб-клиентом Element и отдельным сервисом аутентификации. Развёрнут через Ansible, контейнеры под управлением systemd."},
+    ntfy:{c:C.svc, t:"ntfy", r:"Push-уведомления",
+      tags:["Docker","pub/sub"],
+      d:"Свой сервис оповещений: скрипты и мониторинг шлют алерты на телефон одним запросом."},
+    monitoring:{c:C.svc, t:"Мониторинг", r:"Метрики и дашборды",
+      tags:["Prometheus","Grafana","cAdvisor"],
+      d:"Prometheus собирает метрики хоста и контейнеров, Grafana рисует по ним дашборды по нагрузке, памяти и сети."},
+    coffeeapi:{c:C.svc, t:"Свой REST API", r:"Бэкенд для мобильного приложения",
+      tags:["Node.js","Express","MariaDB"],
+      d:"REST-бэкенд для мобильного приложения учёта, написан с нуля и задеплоен по общему паттерну поверх MariaDB."},
+    raid:{c:C.store, t:"Зеркало дисков (RAID 1)", r:"Устойчивое хранилище важных данных",
+      tags:["mdadm","RAID 1","ext4"],
+      d:"Программное зеркало из двух дисков на mdadm: переживает отказ одного из них. Здесь всё важное и объёмное, а также данные Docker."},
+    ssd:{c:C.store, t:"Системный SSD", r:"Диск под операционную систему",
+      tags:["NVMe","ext4"],
+      d:"Быстрый накопитель под систему, логи и конфиги. Отделён от массива с медиа, чтобы нагрузка на него не тормозила ОС."},
+    db:{c:C.store, t:"Базы данных", r:"Состояние сервисов",
+      tags:["PostgreSQL","MariaDB"],
+      d:"PostgreSQL под Immich, Matrix и Nextcloud, MariaDB под собственный API. Живут на зеркале в составе стеков."}
+  };
+
+  var nodes = Array.prototype.slice.call(document.querySelectorAll(".node"));
+  var def = document.getElementById("d-default");
+  var box = document.getElementById("d-content");
+  var elT = document.getElementById("d-title"), elR = document.getElementById("d-role"),
+      elTags = document.getElementById("d-tags"), elD = document.getElementById("d-desc");
+  var fine = window.matchMedia && window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+
+  function show(key){
+    var o = D[key]; if(!o) return;
+    def.hidden = true; box.hidden = false;
+    elT.textContent = o.t; elT.style.setProperty("--dc", o.c);
+    elR.textContent = o.r;
+    elTags.innerHTML = "";
+    (o.tags||[]).forEach(function(t){ var s=document.createElement("span"); s.className="chip"; s.textContent=t; elTags.appendChild(s); });
+    elD.textContent = o.d;
+    nodes.forEach(function(n){ n.classList.toggle("is-active", n.dataset.key===key); });
+  }
+
+  nodes.forEach(function(n){
+    var key = n.dataset.key;
+    n.setAttribute("type","button");
+    n.addEventListener("click", function(){ show(key); });
+    n.addEventListener("focus", function(){ show(key); });
+    if(fine){ n.addEventListener("mouseenter", function(){ show(key); }); }
+  });
+})();
+</script>
+</body>
+</html>
