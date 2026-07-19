@@ -48,14 +48,19 @@
   /* ---------- header ---------- */
   header{padding:56px 0 40px; border-bottom:1px solid var(--border)}
   .eyebrow{font-family:var(--mono); font-size:13px; letter-spacing:.06em; color:var(--muted2); margin:0 0 14px}
-  h1{margin:0; font-size:clamp(28px,6.2vw,46px); line-height:1.1; letter-spacing:-.01em; font-weight:700}
-  .role{margin:12px 0 0; font-size:clamp(16px,3.2vw,20px); color:var(--l-net); font-weight:600; display:flex; flex-wrap:wrap; align-items:center; gap:10px}
+  h1{margin:0; font-size:clamp(26px,5.2vw,42px); line-height:1.16; letter-spacing:-.01em; font-weight:700}
+  .byline{margin:14px 0 0; font-size:clamp(14px,2.4vw,17px); color:var(--muted)}
+  .byline b{color:var(--text); font-weight:600}
   .badge{font-family:var(--mono); font-size:12px; font-weight:600; color:var(--l-svc);
     border:1px solid var(--l-svc); border-radius:999px; padding:2px 10px}
   .lede{margin:18px 0 0; max-width:64ch; color:var(--muted); font-size:clamp(15px,2.6vw,17px)}
-  .hero-meta{display:flex; flex-wrap:wrap; gap:8px 18px; margin:20px 0 0; font-family:var(--mono); font-size:13px}
-  .hero-meta span,.hero-meta a{color:var(--muted)}
-  .hero-meta .k{color:var(--muted2)}
+  .contact-box{margin:24px 0 0; background:var(--surface); border:1px solid var(--border);
+    border-radius:var(--radius); padding:14px 16px}
+  .cb-h{font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--muted2); margin:0 0 11px}
+  .cb-row{display:flex; flex-wrap:wrap; gap:9px 16px; align-items:center; font-family:var(--mono); font-size:13px}
+  .cb-row .cb-item{color:var(--text)}
+  .cb-row a.cb-item:hover{color:var(--accent); text-decoration:none}
+  .cb-row .k{color:var(--muted2); margin-right:5px}
   .reveal{appearance:none; cursor:pointer; font-family:var(--mono); font-size:13px; color:var(--accent);
     background:transparent; border:1px dashed var(--border2); border-radius:8px; padding:4px 11px; line-height:1.4}
   .reveal:hover{border-color:var(--accent); color:var(--text)}
@@ -81,10 +86,28 @@
   .skill h3{margin:0 0 5px; font-size:13px; font-family:var(--mono); color:var(--text); font-weight:600; letter-spacing:.01em}
   .skill p{margin:0; font-size:14px; color:var(--muted); line-height:1.5}
   .skill p b{color:#cdd7e1; font-weight:600}
+  .skills-lead{font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--muted2); margin:0 0 12px}
+
+  /* collapsible secondary skills */
+  details.more{margin:16px 0 0}
+  details.more>summary{cursor:pointer; list-style:none; font-family:var(--mono); font-size:13px; color:var(--accent);
+    display:inline-flex; align-items:center; gap:8px; padding:9px 14px; border:1px solid var(--border2); border-radius:8px}
+  details.more>summary::-webkit-details-marker{display:none}
+  details.more>summary::before{content:"+"; font-weight:700}
+  details.more[open]>summary::before{content:"\2212"}
+  details.more>summary:hover{border-color:var(--accent); color:var(--text)}
+  details.more[open]>summary{margin:0 0 14px}
+
+  /* soft skills */
+  .soft{margin:28px 0 0}
+  .soft h3{font-family:var(--mono); font-size:12px; letter-spacing:.06em; color:var(--muted2); margin:0 0 12px; font-weight:600}
+  .soft-grid{display:grid; grid-template-columns:1fr; gap:10px}
+  @media(min-width:640px){ .soft-grid{grid-template-columns:repeat(3,1fr)} }
+  .soft-item{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:13px 15px}
+  .soft-item b{display:block; font-size:14px; color:var(--text); font-weight:600; margin:0 0 4px}
+  .soft-item span{font-size:13px; color:var(--muted); line-height:1.5}
 
   /* experience / education */
-  .blocks{display:grid; gap:20px}
-  @media(min-width:760px){ .blocks{grid-template-columns:1fr 1fr} }
   .xp{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:20px}
   .xp .role-t{margin:0; font-size:16px; font-weight:700}
   .xp .meta{font-family:var(--mono); font-size:12px; color:var(--muted2); margin:4px 0 0}
@@ -119,66 +142,95 @@
   <!-- ============ HEADER ============ -->
   <header>
     <p class="eyebrow">// открыт к junior-ролям: Linux / DevOps / эксплуатация</p>
-    <h1>Гущин Иван Дмитриевич</h1>
-    <p class="role">Младший системный администратор · Linux System Administrator <span class="badge">English C1</span></p>
+    <h1>Сам поднимаю Linux-инфраструктуру, разбираюсь в инцидентах и не боюсь продакшена</h1>
+    <p class="byline"><b>Гущин Иван Дмитриевич</b>, младший системный администратор&nbsp;<span class="badge">English C1</span></p>
     <p class="lede">Студент технического направления с практическим опытом администрирования Linux-инфраструктуры. Самостоятельно развернул и поддерживаю домашний сервер на Debian с десятком сервисов (медиа, облако, мессенджер, собственный API), включая reverse proxy, автоматический выпуск SSL-сертификатов и контейнеризацию. Уверенно работаю с Docker, осваиваю Kubernetes и Ansible. Свободно читаю англоязычную документацию и общаюсь с зарубежными коллегами.</p>
-
-    <div class="hero-meta">
-      <button type="button" class="reveal" data-k="тел" data-href="dGVsOis3OTY1MjY3NzUwMw==" data-text="KzcgOTY1IDI2NyA3NSAwMw==">показать телефон</button>
-      <button type="button" class="reveal" data-k="email" data-href="bWFpbHRvOmlndXNoNTVAZ21haWwuY29t" data-text="aWd1c2g1NUBnbWFpbC5jb20=">показать email</button>
-      <a href="https://t.me/lmnk37" target="_blank" rel="noopener"><span class="k">telegram:</span> @lmnk37</a>
-      <span><span class="k">город:</span> Москва</span>
-    </div>
 
     <div class="cta-row">
       <a class="cta" href="/portfolio.html">Живое портфолио инфраструктуры</a>
-      <a class="cta-sec" href="/resume.pdf" target="_blank" rel="noopener">Скачать PDF</a>
+      <a class="cta-sec" href="/resume.pdf" target="_blank" rel="noopener">Скачать CV</a>
+    </div>
+
+    <div class="contact-box">
+      <p class="cb-h">// связаться</p>
+      <div class="cb-row">
+        <a class="cb-item" href="https://t.me/lmnk37" target="_blank" rel="noopener"><span class="k">telegram</span> @lmnk37</a>
+        <button type="button" class="reveal" data-k="email" data-href="bWFpbHRvOmlndXNoNTVAZ21haWwuY29t" data-text="aWd1c2g1NUBnbWFpbC5jb20=">показать email</button>
+        <button type="button" class="reveal" data-k="тел" data-href="dGVsOis3OTY1MjY3NzUwMw==" data-text="KzcgOTY1IDI2NyA3NSAwMw==">показать телефон</button>
+        <a class="cb-item" href="https://github.com/lemonke68" target="_blank" rel="noopener"><span class="k">github</span> lemonke68</a>
+        <span class="cb-item"><span class="k">город</span> Москва</span>
+      </div>
     </div>
   </header>
 
   <!-- ============ 1. SKILLS ============ -->
   <section id="skills">
     <div class="sec-head"><span class="sec-num">01</span><h2>Технические навыки</h2></div>
+    <p class="skills-lead">// ядро стека</p>
     <div class="skills">
       <div class="skill" style="--sc:var(--l-net)">
-        <h3>ОС и администрирование</h3>
+        <h3>Linux и администрирование</h3>
         <p><b>Linux (Debian)</b>: установка и настройка, systemd, многосервисный хостинг, диагностика инцидентов.</p>
       </div>
       <div class="skill" style="--sc:var(--l-svc)">
-        <h3>Контейнеризация</h3>
+        <h3>Docker и контейнеризация</h3>
         <p><b>Docker, Docker Compose</b> (практический опыт). <b>Kubernetes / k3s</b> (базовый уровень, multi-node кластер).</p>
-      </div>
-      <div class="skill" style="--sc:var(--l-node)">
-        <h3>Виртуализация</h3>
-        <p>VirtualBox, Parallels Desktop, Proxmox для экспериментов с ОС и дистрибутивами.</p>
       </div>
       <div class="skill" style="--sc:var(--l-proxy)">
         <h3>Сети</h3>
-        <p>DNS (Pi-hole), VPN и прокси (sing-box, VLESS), Tailscale, reverse proxy (Traefik), TCP/IP.</p>
-      </div>
-      <div class="skill" style="--sc:var(--l-store)">
-        <h3>Информационная безопасность</h3>
-        <p>Firewall (iptables / nftables / ufw), сканирование (nmap), TLS и Let's Encrypt, знакомство с Kali Linux.</p>
+        <p><b>PPPoE, NAT на nftables</b>, DNS (Pi-hole), VPN и прокси (sing-box, VLESS), Tailscale, reverse proxy (Traefik), TCP/IP.</p>
       </div>
       <div class="skill" style="--sc:var(--l-net)">
-        <h3>Автоматизация и IaC</h3>
-        <p><b>Ansible</b> для деплоя многокомпонентных стеков. Bash-скрипты.</p>
+        <h3>Ansible и автоматизация</h3>
+        <p><b>Ansible</b> для деплоя многокомпонентных стеков. Bash-скрипты, systemd-юниты и таймеры.</p>
       </div>
-      <div class="skill" style="--sc:var(--l-svc)">
-        <h3>Базы данных</h3>
-        <p>PostgreSQL, MariaDB (бэкапы, восстановление, права доступа). SQL на базовом уровне.</p>
+    </div>
+
+    <details class="more">
+      <summary>Ещё навыки: безопасность, виртуализация, БД, мониторинг, Git, языки</summary>
+      <div class="skills">
+        <div class="skill" style="--sc:var(--l-store)">
+          <h3>Информационная безопасность</h3>
+          <p>Firewall (iptables / nftables / ufw), сканирование (nmap), TLS и Let's Encrypt, знакомство с Kali Linux.</p>
+        </div>
+        <div class="skill" style="--sc:var(--l-node)">
+          <h3>Виртуализация</h3>
+          <p>VirtualBox, Parallels Desktop, Proxmox для экспериментов с ОС и дистрибутивами.</p>
+        </div>
+        <div class="skill" style="--sc:var(--l-svc)">
+          <h3>Базы данных</h3>
+          <p>PostgreSQL, MariaDB (бэкапы, восстановление, права доступа). SQL на базовом уровне.</p>
+        </div>
+        <div class="skill" style="--sc:var(--l-proxy)">
+          <h3>Мониторинг</h3>
+          <p>Netdata; общее понимание стека Prometheus и Grafana.</p>
+        </div>
+        <div class="skill" style="--sc:var(--l-node)">
+          <h3>Контроль версий</h3>
+          <p>Git: clone, commit, push, работа с ветками.</p>
+        </div>
+        <div class="skill" style="--sc:var(--l-store)">
+          <h3>Программирование</h3>
+          <p>Python (чтение и правка кода), C++ (базовый), Java (учебный опыт).</p>
+        </div>
       </div>
-      <div class="skill" style="--sc:var(--l-proxy)">
-        <h3>Мониторинг</h3>
-        <p>Netdata; общее понимание стека Prometheus и Grafana.</p>
-      </div>
-      <div class="skill" style="--sc:var(--l-node)">
-        <h3>Контроль версий</h3>
-        <p>Git: clone, commit, push, работа с ветками.</p>
-      </div>
-      <div class="skill" style="--sc:var(--l-store)">
-        <h3>Программирование</h3>
-        <p>Python (чтение и правка кода), C++ (базовый), Java (учебный опыт).</p>
+    </details>
+
+    <div class="soft">
+      <h3>// гибкие навыки</h3>
+      <div class="soft-grid">
+        <div class="soft-item">
+          <b>Самообучение</b>
+          <span>Весь стек освоил сам по документации, в основном англоязычной.</span>
+        </div>
+        <div class="soft-item">
+          <b>Самостоятельность</b>
+          <span>Собрал и держу инфраструктуру в одиночку: от железа и сети до сервисов.</span>
+        </div>
+        <div class="soft-item">
+          <b>Диагностика под нагрузкой</b>
+          <span>Инциденты на живом сервере разбирал по логам и метрикам. Разборы в портфолио.</span>
+        </div>
       </div>
     </div>
   </section>
@@ -205,20 +257,13 @@
     </div>
   </section>
 
-  <!-- ============ 3. WORK + EDUCATION ============ -->
+  <!-- ============ 3. EDUCATION ============ -->
   <section id="background">
-    <div class="sec-head"><span class="sec-num">03</span><h2>Опыт работы и образование</h2></div>
-    <div class="blocks">
-      <div class="xp">
-        <p class="role-t">Кассир / бариста</p>
-        <p class="meta">сфера общественного питания</p>
-        <p>Работа с людьми в режиме многозадачности и высокой нагрузки. Ответственность и стрессоустойчивость.</p>
-      </div>
-      <div class="xp">
-        <p class="role-t">РГУ им. А. Н. Косыгина</p>
-        <p class="meta">информационные системы и технологии · 3 курс</p>
-        <p>Профильное техническое направление, параллельно с практикой на собственном сервере.</p>
-      </div>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Образование</h2></div>
+    <div class="xp">
+      <p class="role-t">РГУ им. А. Н. Косыгина</p>
+      <p class="meta">информационные системы и технологии · 3 курс</p>
+      <p>Профильное техническое направление, параллельно с практикой на собственном сервере.</p>
     </div>
   </section>
 
@@ -236,7 +281,12 @@
       var a = document.createElement("a");
       a.href = atob(b.getAttribute("data-href"));
       a.rel = "noopener";
-      a.innerHTML = '<span class="k">' + b.getAttribute("data-k") + ':</span> ' + atob(b.getAttribute("data-text"));
+      a.className = "cb-item";
+      var k = document.createElement("span");
+      k.className = "k";
+      k.textContent = b.getAttribute("data-k");
+      a.appendChild(k);
+      a.appendChild(document.createTextNode(" " + atob(b.getAttribute("data-text"))));
       b.parentNode.replaceChild(a, b);
     });
   });
