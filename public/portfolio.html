@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="dark">
 <meta name="description" content="Гущин Иван, Junior Linux System Administrator. Домашняя инфраструктура: сеть, Docker, reverse-proxy, хранилище, удалённый доступ.">
+<link rel="alternate" hreflang="ru" href="https://cv.mango-kokos.ru/portfolio.html">
+<link rel="alternate" hreflang="en" href="https://cv.mango-kokos.ru/en/portfolio.html">
+<link rel="alternate" hreflang="x-default" href="https://cv.mango-kokos.ru/portfolio.html">
 <title>Инфраструктура · Гущин Иван</title>
 <style>
   :root{
@@ -40,6 +43,11 @@
   .topnav-in{max-width:var(--maxw); margin:0 auto; padding:11px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px}
   .np-brand{font-family:var(--mono); font-size:14px; font-weight:700; color:var(--text)}
   .np-brand:hover{text-decoration:none}
+  .np-left{display:flex; align-items:center; gap:12px; min-width:0}
+  .np-lang{display:inline-flex; gap:2px; border:1px solid var(--border); border-radius:999px; padding:2px}
+  .np-lang a{font-family:var(--mono); font-size:12px; color:var(--muted2); padding:3px 9px; border-radius:999px; line-height:1.4}
+  .np-lang a:hover{color:var(--text); text-decoration:none}
+  .np-lang a.active{color:var(--text); background:var(--surface2)}
   .np-tabs{display:flex; gap:6px}
   .np-tabs a{font-family:var(--mono); font-size:13px; color:var(--muted); padding:6px 13px; border-radius:999px; border:1px solid transparent; white-space:nowrap}
   .np-tabs a:hover{color:var(--text); text-decoration:none}
@@ -151,7 +159,13 @@
 
 <nav class="topnav">
   <div class="topnav-in">
-    <a href="/" class="np-brand">Гущин Иван</a>
+    <div class="np-left">
+      <a href="/" class="np-brand">Гущин Иван</a>
+      <span class="np-lang">
+        <a href="/portfolio.html" class="active" aria-current="true">RU</a>
+        <a href="/en/portfolio.html" hreflang="en">EN</a>
+      </span>
+    </div>
     <div class="np-tabs">
       <a href="/">Резюме</a>
       <a href="/portfolio.html" class="active" aria-current="page">Инфраструктура</a>
