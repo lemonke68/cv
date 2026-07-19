@@ -56,6 +56,9 @@
   .hero-meta{display:flex; flex-wrap:wrap; gap:8px 18px; margin:20px 0 0; font-family:var(--mono); font-size:13px}
   .hero-meta span,.hero-meta a{color:var(--muted)}
   .hero-meta .k{color:var(--muted2)}
+  .reveal{appearance:none; cursor:pointer; font-family:var(--mono); font-size:13px; color:var(--accent);
+    background:transparent; border:1px dashed var(--border2); border-radius:8px; padding:4px 11px; line-height:1.4}
+  .reveal:hover{border-color:var(--accent); color:var(--text)}
   .cta-row{display:flex; flex-wrap:wrap; gap:10px; margin:24px 0 0}
   .cta{display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:13px; font-weight:700;
     padding:11px 17px; border-radius:9px; background:var(--accent); color:#04121f; border:1px solid var(--accent)}
@@ -121,9 +124,9 @@
     <p class="lede">Студент технического направления с практическим опытом администрирования Linux-инфраструктуры. Самостоятельно развернул и поддерживаю домашний сервер на Debian с десятком сервисов (медиа, облако, мессенджер, собственный API), включая reverse proxy, автоматический выпуск SSL-сертификатов и контейнеризацию. Уверенно работаю с Docker, осваиваю Kubernetes и Ansible. Свободно читаю англоязычную документацию и общаюсь с зарубежными коллегами.</p>
 
     <div class="hero-meta">
-      <a href="tel:+79652677503"><span class="k">тел:</span> +7 965 267 75 03</a>
-      <a href="mailto:igush55@gmail.com"><span class="k">email:</span> igush55@gmail.com</a>
-      <a href="https://t.me/lmnk_37" target="_blank" rel="noopener"><span class="k">telegram:</span> @lmnk37</a>
+      <button type="button" class="reveal" data-k="тел" data-href="dGVsOis3OTY1MjY3NzUwMw==" data-text="KzcgOTY1IDI2NyA3NSAwMw==">показать телефон</button>
+      <button type="button" class="reveal" data-k="email" data-href="bWFpbHRvOmlndXNoNTVAZ21haWwuY29t" data-text="aWd1c2g1NUBnbWFpbC5jb20=">показать email</button>
+      <a href="https://t.me/lmnk37" target="_blank" rel="noopener"><span class="k">telegram:</span> @lmnk37</a>
       <span><span class="k">город:</span> Москва</span>
     </div>
 
@@ -225,5 +228,19 @@
   </footer>
 
 </div>
+
+<script>
+(function(){
+  document.querySelectorAll(".reveal").forEach(function(b){
+    b.addEventListener("click", function(){
+      var a = document.createElement("a");
+      a.href = atob(b.getAttribute("data-href"));
+      a.rel = "noopener";
+      a.innerHTML = '<span class="k">' + b.getAttribute("data-k") + ':</span> ' + atob(b.getAttribute("data-text"));
+      b.parentNode.replaceChild(a, b);
+    });
+  });
+})();
+</script>
 </body>
 </html>
