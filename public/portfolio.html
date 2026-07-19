@@ -57,14 +57,10 @@
   header{padding:64px 0 40px; border-bottom:1px solid var(--border)}
   .eyebrow{font-family:var(--mono); font-size:13px; letter-spacing:.06em; color:var(--muted2); margin:0 0 14px}
   h1{margin:0; font-size:clamp(28px,6.2vw,46px); line-height:1.1; letter-spacing:-.01em; font-weight:700}
-  .role{margin:12px 0 0; font-size:clamp(16px,3.2vw,20px); color:var(--l-net); font-weight:600}
   .lede{margin:16px 0 0; max-width:62ch; color:var(--muted); font-size:clamp(15px,2.6vw,17px)}
   .stack{display:flex; flex-wrap:wrap; gap:7px; margin:26px 0 0}
   .chip{font-family:var(--mono); font-size:12px; color:var(--muted); background:var(--surface); border:1px solid var(--border);
         padding:4px 9px; border-radius:999px; white-space:nowrap}
-  .contacts{display:flex; flex-wrap:wrap; gap:8px 18px; margin:24px 0 0; font-size:14px}
-  .contacts a,.contacts span{color:var(--muted); font-family:var(--mono); font-size:13px}
-  .contacts .k{color:var(--muted2)}
 
   /* ---------- sections ---------- */
   section{padding:54px 0; border-bottom:1px solid var(--border)}
@@ -178,8 +174,7 @@
   <!-- ============ HEADER ============ -->
   <header>
     <p class="eyebrow">// homelab · self-hosted · Debian</p>
-    <h1>Гущин Иван</h1>
-    <p class="role">Junior Linux System Administrator</p>
+    <h1>Домашняя инфраструктура</h1>
     <p class="lede">Сам собрал и держу домашний сервер: интернет-шлюз, десяток сервисов в Docker за одним reverse-proxy, зеркальное хранилище и защищённый удалённый доступ. Всё, что описано ниже, работает у меня дома в постоянной эксплуатации.</p>
 
     <div class="stack" aria-label="Стек технологий">
@@ -196,12 +191,6 @@
       <span class="chip">PostgreSQL · MariaDB</span>
       <span class="chip">Prometheus · Grafana</span>
       <span class="chip">Bash</span>
-    </div>
-
-    <div class="contacts">
-      <span><span class="k">telegram:</span> @lmnk37</span>
-      <span><span class="k">github:</span> github.com/lemonke68</span>
-      <span><span class="k">резюме и контакты:</span> <a href="/">на главной</a></span>
     </div>
   </header>
 
@@ -412,7 +401,6 @@
   </section>
 
   <footer>
-    <p class="mono">Гущин Иван · Junior Linux System Administrator</p>
     <p>Схема отражает реальную архитектуру сервера.</p>
   </footer>
 
